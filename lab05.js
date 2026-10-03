@@ -6,18 +6,18 @@ import formatStudentResult, {
     getStatus 
 } from './studentUtils.js';
 
-// Helper to safely append HTML to an element
-function appendHtml(id, html) {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML += html + "<br>";
-}
 function setHtml(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
 }
 
+function appendHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML += html;
+}
+
 // ==========================================
-// Task 1 — University Course Enrollment Manager
+// Task 1
 // ==========================================
 function task1() {
     const coreCourses = ["Web Development", "Database Systems", "Data Structures"];
@@ -25,31 +25,23 @@ function task1() {
     const student = { name: "Ali", rollNumber: "BSCS-001", department: "Computer Science", semester: 6 };
     const cgpas = [3.1, 3.5, 3.8, 3.2, 3.9];
 
-    // 1 & 2. Merge and copy
     const allCourses = [...coreCourses, ...electiveCourses];
     const copyCourses = [...allCourses, "Software Engineering"];
-
-    // 3. Update student
     const updatedStudent = { ...student, semester: 7, cgpa: 3.45 };
-
-    // 6. Math.max
     const highestCGPA = Math.max(...cgpas);
 
     setHtml('spreadOutput', `
-        <strong>Core Courses:</strong> ${coreCourses.join(", ")}<br>
-        <strong>Elective Courses:</strong> ${electiveCourses.join(", ")}<br>
-        <strong>All Courses (${allCourses.length}):</strong> ${allCourses.join(", ")}<br>
-        <strong>Copy after adding a course (${copyCourses.length}):</strong> ${copyCourses.join(", ")}<br>
-        <strong>Original still has ${allCourses.length} courses</strong><br>
-        <br>
-        <strong>Original Student:</strong> ${student.name}, Semester ${student.semester}<br>
-        <strong>Updated Student:</strong> ${updatedStudent.name}, Semester ${updatedStudent.semester}, CGPA ${updatedStudent.cgpa}<br>
-        <strong>Highest CGPA:</strong> ${highestCGPA}
+        <div class="info-widget"><i class="fa-solid fa-book text-primary me-2"></i> <strong>Core:</strong> ${coreCourses.join(", ")}</div>
+        <div class="info-widget"><i class="fa-solid fa-book-open text-info me-2"></i> <strong>Elective:</strong> ${electiveCourses.join(", ")}</div>
+        <div class="info-widget"><i class="fa-solid fa-layer-group text-success me-2"></i> <strong>All (${allCourses.length}):</strong> ${allCourses.join(", ")}</div>
+        <div class="info-widget"><i class="fa-solid fa-clone text-warning me-2"></i> <strong>Copied (+1):</strong> ${copyCourses.join(", ")}</div>
+        <div class="info-widget mt-3"><i class="fa-solid fa-user text-primary me-2"></i> <strong>Original Student:</strong> ${student.name}, Sem ${student.semester}</div>
+        <div class="info-widget"><i class="fa-solid fa-user-check text-success me-2"></i> <strong>Updated Student:</strong> ${updatedStudent.name}, Sem ${updatedStudent.semester}, CGPA ${updatedStudent.cgpa}</div>
+        <div class="info-widget bg-primary text-white border-0 mt-3"><i class="fa-solid fa-trophy text-warning me-2"></i> <strong>Highest CGPA:</strong> ${highestCGPA}</div>
     `);
 
-    // 4 & 5. Rest parameters
     function enrollStudent(name, ...courses) {
-        return `${name} enrolled in ${courses.length} course(s): ${courses.join(", ")}`;
+        return `<i class="fa-solid fa-graduation-cap me-2"></i><strong>${name}</strong> enrolled in <span class="badge bg-primary">${courses.length} courses</span>:<br><span class="text-muted small">${courses.join(", ")}</span>`;
     }
     const calculateAverageCGPA = (...cgpasArgs) => {
         const sum = cgpasArgs.reduce((acc, val) => acc + val, 0);
@@ -57,22 +49,21 @@ function task1() {
     };
 
     setHtml('restOutput', `
-        ${enrollStudent(student.name, "Web Development", "Database Systems", "Artificial Intelligence")}<br>
-        <strong>Average CGPA:</strong> ${calculateAverageCGPA(...cgpas)}
+        <div class="info-widget border-success">${enrollStudent(student.name, "Web Development", "Database Systems", "AI")}</div>
+        <div class="info-widget bg-dark text-white border-0 mt-2"><i class="fa-solid fa-calculator text-info me-2"></i> <strong>Average CGPA:</strong> ${calculateAverageCGPA(...cgpas)}</div>
     `);
 
-    // 7. Default parameters
     function getStudentInfo(name, department = "Computer Science") {
-        return `Department (default): ${department}`;
+        return `<i class="fa-solid fa-building-columns text-primary me-2"></i> <strong>Department (default):</strong> ${department}`;
     }
-    setHtml('es6Output', getStudentInfo(student.name));
+    setHtml('es6Output', `<div class="info-widget">${getStudentInfo(student.name)}</div>`);
 }
 
 // ==========================================
-// Task 2 — Student Utility Module
+// Task 2
 // ==========================================
 function task2() {
-    let output = `<strong>Department: ${DEPARTMENT_NAME}</strong><br><br>`;
+    let output = `<h5 class="text-primary mb-3"><i class="fa-solid fa-building me-2"></i>${DEPARTMENT_NAME}</h5><div class="row g-3">`;
     
     const students = [
         { name: "Sara", rollNumber: "BSCS-023", assignment: 28, midterm: 20, finalExam: 34 },
@@ -88,21 +79,34 @@ function task2() {
         const grade = getGrade(total);
         const status = getStatus(total);
         
-        const formattedStr = formatStudentResult(name, rollNumber, total).replace(/\n/g, '<br>');
+        const badgeColor = status === 'Pass' ? 'bg-success' : 'bg-danger';
+        
         output += `
-            <div class="card p-3 mb-2 bg-light">
-                ${formattedStr}<br>
-                Average: ${average}<br>
-                Grade: ${grade}<br>
-                Status: ${status}
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100" style="background: rgba(255,255,255,0.7);">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-0 text-primary">${name}</h6>
+                        <small class="text-muted">${rollNumber}</small>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span><i class="fa-solid fa-chart-line text-info me-1"></i> Total</span> <strong>${total}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span><i class="fa-solid fa-percent text-warning me-1"></i> Avg</span> <strong>${average}</strong>
+                        </div>
+                        <span class="badge bg-dark">${grade} Grade</span>
+                        <span class="badge ${badgeColor}">${status}</span>
+                    </div>
+                </div>
             </div>
         `;
     });
+    output += `</div>`;
     setHtml('moduleOutput', output);
 }
 
 // ==========================================
-// Task 3 — Online Examination Workflow
+// Task 3
 // ==========================================
 function task3() {
     function verifyStudent(roll, callback) {
@@ -116,44 +120,41 @@ function task3() {
     function generateResult(callback) { setTimeout(() => callback("Result generated: 82 marks"), 1000); }
 
     function runWorkflow(roll, targetId) {
-        setHtml(targetId, `<strong>Exam workflow started...</strong><br>`);
+        setHtml(targetId, `<div class="alert alert-primary shadow-sm"><i class="fa-solid fa-spinner fa-spin me-2"></i> Exam workflow started...</div>`);
         let timeOffset = 0;
         
         verifyStudent(roll, (error, data) => {
             timeOffset += 1;
             if (error) {
-                appendHtml(targetId, `<span class="text-danger">Error: ${error}</span>`);
+                appendHtml(targetId, `<div class="alert alert-danger shadow-sm mt-2"><i class="fa-solid fa-triangle-exclamation me-2"></i> <strong>Error:</strong> ${error}</div>`);
                 return;
             }
-            appendHtml(targetId, `Step 1: ${data} (after ${timeOffset} second)`);
+            appendHtml(targetId, `<div class="info-widget border-info"><i class="fa-solid fa-user-check text-info me-2"></i> Step 1: ${data} <span class="badge bg-secondary float-end">${timeOffset}s</span></div>`);
             
             loadExamPaper((msg) => {
                 timeOffset += 1.5;
-                appendHtml(targetId, `Step 2: ${msg} (after ${timeOffset} seconds)`);
+                appendHtml(targetId, `<div class="info-widget border-warning"><i class="fa-solid fa-file-lines text-warning me-2"></i> Step 2: ${msg} <span class="badge bg-secondary float-end">${timeOffset}s</span></div>`);
                 
                 submitAnswers((msg) => {
                     timeOffset += 2;
-                    appendHtml(targetId, `Step 3: ${msg} (after ${timeOffset} seconds)`);
+                    appendHtml(targetId, `<div class="info-widget border-primary"><i class="fa-solid fa-upload text-primary me-2"></i> Step 3: ${msg} <span class="badge bg-secondary float-end">${timeOffset}s</span></div>`);
                     
                     generateResult((msg) => {
                         timeOffset += 1;
-                        appendHtml(targetId, `Step 4: ${msg} (after ${timeOffset} seconds)`);
-                        appendHtml(targetId, `<strong>Exam completed successfully!</strong>`);
+                        appendHtml(targetId, `<div class="info-widget border-success"><i class="fa-solid fa-square-poll-vertical text-success me-2"></i> Step 4: ${msg} <span class="badge bg-secondary float-end">${timeOffset}s</span></div>`);
+                        appendHtml(targetId, `<div class="alert alert-success shadow-sm mt-3"><i class="fa-solid fa-circle-check me-2"></i> <strong>Exam completed successfully!</strong></div>`);
                     });
                 });
             });
         });
     }
 
-    // Run valid roll number in nestedCallbackOutput
     runWorkflow("BSCS-001", "nestedCallbackOutput");
-    
-    // Run empty roll number in callbackOutput to show error handling
     runWorkflow("", "callbackOutput");
 }
 
 // ==========================================
-// Task 4 — University Result Portal
+// Task 4
 // ==========================================
 const dbStudents = [
     { name: "Ali", rollNumber: "BSCS-001", department: "Computer Science", semester: 6, assignment: 28, midterm: 20, finalExam: 34 },
@@ -168,7 +169,7 @@ function findStudent(rollNumber) {
         setTimeout(() => {
             const student = dbStudents.find(s => s.rollNumber === rollNumber);
             if (student) resolve(student);
-            else reject("Student not found");
+            else reject("Student not found in DB.");
         }, 1000);
     });
 }
@@ -186,57 +187,50 @@ function calculateResult(student) {
     });
 }
 
-// Part A: Promise Chain
 function testPromiseChain() {
     const out = 'promiseOutput';
-    setHtml(out, "Searching for roll number BSCS-001 (Promise Chain)...<br>");
+    setHtml(out, `<div class="text-primary mb-2"><i class="fa-solid fa-magnifying-glass fa-beat-fade me-2"></i> Searching for <strong>BSCS-001</strong> via Promises...</div>`);
     
     findStudent("BSCS-001")
         .then(student => calculateResult(student).then(result => ({ student, result })))
         .then(({ student, result }) => {
-            const statusBadge = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
+            const badgeClass = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
             appendHtml(out, `
-                <div class="card shadow-sm mt-3 border-0">
+                <div class="card shadow-sm border-0 border-start border-4 border-primary">
                     <div class="card-body">
-                        <h5 class="card-title text-primary">${student.name} <span class="badge bg-secondary">${student.rollNumber}</span></h5>
-                        <hr>
-                        <div class="row">
-                            <div class="col-6"><strong>Total Marks:</strong> ${result.total}</div>
-                            <div class="col-6"><strong>Average:</strong> ${result.average}</div>
-                            <div class="col-6 mt-2"><strong>Grade:</strong> <span class="badge bg-info text-dark">${result.grade}</span></div>
-                            <div class="col-6 mt-2"><strong>Status:</strong> <span class="badge ${statusBadge}">${result.status}</span></div>
+                        <h6 class="text-primary fw-bold">${student.name} <span class="badge bg-light text-dark float-end">${student.rollNumber}</span></h6>
+                        <div class="d-flex justify-content-between mt-3">
+                            <span class="text-muted"><i class="fa-solid fa-star text-warning"></i> Total: <strong>${result.total}</strong></span>
+                            <span class="badge ${badgeClass}">${result.status}</span>
                         </div>
                     </div>
                 </div>
             `);
         })
-        .catch(err => appendHtml(out, `<span class="text-danger">Error: ${err}</span>`))
-        .finally(() => appendHtml(out, "Search completed"));
+        .catch(err => appendHtml(out, `<div class="alert alert-danger"><i class="fa-solid fa-circle-xmark me-2"></i> ${err}</div>`));
 }
 
-// Part B: Async Await
 async function testAsyncAwait(rollNo = "BSCS-999") {
-    const out = 'studentPortalOutput';
-    setHtml(out, `<div class="text-primary mt-2">Searching for roll number <strong>${rollNo}</strong>...</div>`);
+    const out = 'asyncOutput';
+    setHtml(out, `<div class="text-primary mb-2"><i class="fa-solid fa-magnifying-glass fa-beat-fade me-2"></i> Searching for <strong>${rollNo}</strong> via Async/Await...</div>`);
     try {
         const student = await findStudent(rollNo);
         const result = await calculateResult(student);
-        const statusBadge = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
+        const badgeClass = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
         setHtml(out, `
-            <div class="alert alert-success mt-3 mb-0">
-                <h5 class="alert-heading">${student.name} (${student.rollNumber})</h5>
-                <p class="mb-0"><strong>Grade:</strong> ${result.grade} | <strong>Status:</strong> <span class="badge ${statusBadge}">${result.status}</span></p>
+            <div class="alert alert-success border-0 shadow-sm">
+                <h6 class="alert-heading fw-bold mb-1"><i class="fa-solid fa-circle-check me-2"></i> ${student.name}</h6>
+                <small>Grade: ${result.grade} | Status: <span class="badge ${badgeClass}">${result.status}</span></small>
             </div>
         `);
     } catch (err) {
-        setHtml(out, `<div class="alert alert-danger mt-3 mb-0"><strong>Error:</strong> ${err}</div>`);
+        setHtml(out, `<div class="alert alert-danger border-0 shadow-sm"><i class="fa-solid fa-circle-xmark me-2"></i> ${err}</div>`);
     }
 }
 
-// Part D: Load All Results (Triggered by Button)
 async function loadAllResults() {
     const out = 'studentPortalOutput';
-    setHtml(out, "Loading all results...<br>");
+    setHtml(out, `<div class="text-center p-4"><i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary mb-2"></i><br>Loading all results...</div>`);
 
     try {
         const promises = dbStudents.map(student => 
@@ -244,21 +238,26 @@ async function loadAllResults() {
         );
         const allResults = await Promise.all(promises);
         
-        let htmlOutput = '<div class="row mt-3">';
+        let htmlOutput = '<div class="row g-3 mt-2">';
         let passedCount = 0; let failedCount = 0;
 
         allResults.forEach(({student, res}) => {
             if (res.status === "Pass") passedCount++; else failedCount++;
             const badgeClass = res.status === 'Pass' ? 'bg-success' : 'bg-danger';
+            const icon = res.status === 'Pass' ? 'fa-check' : 'fa-xmark';
             htmlOutput += `
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card h-100 border-primary shadow-sm">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(145deg, #ffffff, #f8fafc);">
                         <div class="card-body">
-                            <h6 class="card-title fw-bold">${student.name}</h6>
-                            <p class="card-text mb-1 text-muted small">${student.rollNumber}</p>
-                            <hr class="my-2">
-                            <p class="mb-0"><strong>Grade:</strong> ${res.grade}</p>
-                            <p class="mb-0"><strong>Status:</strong> <span class="badge ${badgeClass}">${res.status}</span></p>
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-title fw-bold text-dark mb-0">${student.name}</h6>
+                                <span class="badge bg-light text-muted">${student.rollNumber}</span>
+                            </div>
+                            <hr class="my-2 opacity-25">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold">Grade: ${res.grade}</span>
+                                <span class="badge ${badgeClass} rounded-pill px-3"><i class="fa-solid ${icon} me-1"></i> ${res.status}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -266,15 +265,30 @@ async function loadAllResults() {
         });
         htmlOutput += '</div>';
         htmlOutput += `
-            <div class="alert alert-info mt-3 mb-0">
-                <h5 class="alert-heading">Final Statistics</h5>
-                <p class="mb-0">Total Students: <strong>${allResults.length}</strong> | Passed: <strong class="text-success">${passedCount}</strong> | Failed: <strong class="text-danger">${failedCount}</strong></p>
+            <div class="card bg-dark text-white border-0 shadow-lg mt-4">
+                <div class="card-body d-flex justify-content-around align-items-center p-4">
+                    <div class="text-center">
+                        <i class="fa-solid fa-users fa-2x text-primary mb-2"></i>
+                        <h4 class="mb-0 fw-bold">${allResults.length}</h4>
+                        <small class="text-muted">Total Students</small>
+                    </div>
+                    <div class="text-center">
+                        <i class="fa-solid fa-award fa-2x text-success mb-2"></i>
+                        <h4 class="mb-0 fw-bold">${passedCount}</h4>
+                        <small class="text-muted">Passed</small>
+                    </div>
+                    <div class="text-center">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x text-danger mb-2"></i>
+                        <h4 class="mb-0 fw-bold">${failedCount}</h4>
+                        <small class="text-muted">Failed</small>
+                    </div>
+                </div>
             </div>
         `;
         
         setHtml(out, htmlOutput);
     } catch (err) {
-        setHtml(out, `<span class="text-danger">Error: ${err}</span>`);
+        setHtml(out, `<div class="alert alert-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> ${err}</div>`);
     }
 }
 
@@ -282,7 +296,24 @@ const searchBtn = document.getElementById('search-btn');
 if (searchBtn) {
     searchBtn.addEventListener('click', () => {
         const roll = document.getElementById('search-roll').value.trim();
-        if (roll) testAsyncAwait(roll);
+        // Since the UI element in the original HTML is asyncOutput, we reuse it or redirect.
+        // Wait, the user's original HTML has an input in section 9 but we mapped it earlier.
+        // Let's output the result inside studentPortalOutput if they search.
+        if (roll) {
+            const out = 'studentPortalOutput';
+            setHtml(out, `<div class="text-primary mt-3"><i class="fa-solid fa-magnifying-glass fa-beat-fade me-2"></i> Searching...</div>`);
+            findStudent(roll).then(student => calculateResult(student).then(result => {
+                const badgeClass = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
+                setHtml(out, `
+                    <div class="alert alert-success border-0 shadow-sm mt-3">
+                        <h5 class="fw-bold"><i class="fa-solid fa-user-check me-2"></i>${student.name}</h5>
+                        <p class="mb-0 mt-2">Grade: <strong>${result.grade}</strong> &bull; Status: <span class="badge ${badgeClass}">${result.status}</span></p>
+                    </div>
+                `);
+            })).catch(err => {
+                setHtml(out, `<div class="alert alert-danger border-0 shadow-sm mt-3"><i class="fa-solid fa-circle-xmark me-2"></i> ${err}</div>`);
+            });
+        }
     });
 }
 
