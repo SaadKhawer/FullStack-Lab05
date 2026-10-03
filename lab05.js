@@ -194,28 +194,42 @@ function testPromiseChain() {
     findStudent("BSCS-001")
         .then(student => calculateResult(student).then(result => ({ student, result })))
         .then(({ student, result }) => {
-            appendHtml(out, `----------------------------------------------<br>
-                Student: ${student.name}<br>Roll No: ${student.rollNumber}<br>
-                Total: ${result.total}<br>Average: ${result.average}<br>
-                Grade: ${result.grade}<br>Status: ${result.status}<br>
-                ----------------------------------------------`);
+            const statusBadge = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
+            appendHtml(out, `
+                <div class="card shadow-sm mt-3 border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">${student.name} <span class="badge bg-secondary">${student.rollNumber}</span></h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6"><strong>Total Marks:</strong> ${result.total}</div>
+                            <div class="col-6"><strong>Average:</strong> ${result.average}</div>
+                            <div class="col-6 mt-2"><strong>Grade:</strong> <span class="badge bg-info text-dark">${result.grade}</span></div>
+                            <div class="col-6 mt-2"><strong>Status:</strong> <span class="badge ${statusBadge}">${result.status}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `);
         })
         .catch(err => appendHtml(out, `<span class="text-danger">Error: ${err}</span>`))
         .finally(() => appendHtml(out, "Search completed"));
 }
 
 // Part B: Async Await
-async function testAsyncAwait() {
-    const out = 'asyncOutput';
-    setHtml(out, "Searching for roll number BSCS-999 (Async/Await)...<br>Searching...<br>");
+async function testAsyncAwait(rollNo = "BSCS-999") {
+    const out = 'studentPortalOutput';
+    setHtml(out, `<div class="text-primary mt-2">Searching for roll number <strong>${rollNo}</strong>...</div>`);
     try {
-        const student = await findStudent("BSCS-999");
+        const student = await findStudent(rollNo);
         const result = await calculateResult(student);
-        appendHtml(out, `Student: ${student.name}`);
+        const statusBadge = result.status === 'Pass' ? 'bg-success' : 'bg-danger';
+        setHtml(out, `
+            <div class="alert alert-success mt-3 mb-0">
+                <h5 class="alert-heading">${student.name} (${student.rollNumber})</h5>
+                <p class="mb-0"><strong>Grade:</strong> ${result.grade} | <strong>Status:</strong> <span class="badge ${statusBadge}">${result.status}</span></p>
+            </div>
+        `);
     } catch (err) {
-        appendHtml(out, `<span class="text-danger">Error: ${err}</span>`);
-    } finally {
-        appendHtml(out, "Search completed");
+        setHtml(out, `<div class="alert alert-danger mt-3 mb-0"><strong>Error:</strong> ${err}</div>`);
     }
 }
 
@@ -230,15 +244,33 @@ async function loadAllResults() {
         );
         const allResults = await Promise.all(promises);
         
-        let htmlOutput = '----------------------------------------------<br>';
+        let htmlOutput = '<div class="row mt-3">';
         let passedCount = 0; let failedCount = 0;
 
         allResults.forEach(({student, res}) => {
             if (res.status === "Pass") passedCount++; else failedCount++;
-            htmlOutput += `Student: ${student.name} Roll No: ${student.rollNumber} Grade: ${res.grade} Status: ${res.status}<br>`;
+            const badgeClass = res.status === 'Pass' ? 'bg-success' : 'bg-danger';
+            htmlOutput += `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 border-primary shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold">${student.name}</h6>
+                            <p class="card-text mb-1 text-muted small">${student.rollNumber}</p>
+                            <hr class="my-2">
+                            <p class="mb-0"><strong>Grade:</strong> ${res.grade}</p>
+                            <p class="mb-0"><strong>Status:</strong> <span class="badge ${badgeClass}">${res.status}</span></p>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
-        htmlOutput += '----------------------------------------------<br>';
-        htmlOutput += `<strong>Final Statistics</strong><br>Total Students: ${allResults.length}<br>Passed: ${passedCount}<br>Failed: ${failedCount}`;
+        htmlOutput += '</div>';
+        htmlOutput += `
+            <div class="alert alert-info mt-3 mb-0">
+                <h5 class="alert-heading">Final Statistics</h5>
+                <p class="mb-0">Total Students: <strong>${allResults.length}</strong> | Passed: <strong class="text-success">${passedCount}</strong> | Failed: <strong class="text-danger">${failedCount}</strong></p>
+            </div>
+        `;
         
         setHtml(out, htmlOutput);
     } catch (err) {
@@ -246,9 +278,16 @@ async function loadAllResults() {
     }
 }
 
+const searchBtn = document.getElementById('search-btn');
+if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+        const roll = document.getElementById('search-roll').value.trim();
+        if (roll) testAsyncAwait(roll);
+    });
+}
+
 const loadPortalBtn = document.getElementById('loadPortalBtn');
 if (loadPortalBtn) {
-    // Remove the old script.js event listener if any by cloning (optional) but we just add ours
     loadPortalBtn.addEventListener('click', loadAllResults);
 }
 

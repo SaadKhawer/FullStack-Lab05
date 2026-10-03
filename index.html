@@ -225,14 +225,23 @@
             </div>
 
             <!-- 9. Final Portal -->
-            <div class="profile-card">
-                <h3>9. Student Result Portal</h3>
-                <p>This example combines the concepts learned
-                    in Lab 05.</p>
-                <button id="loadPortalBtn" class="btn btn-primary mb-3">
-                    Load Student Results
+            <div class="profile-card bg-white shadow-sm p-4 rounded border">
+                <h3 class="text-primary mb-3">9. Student Result Portal</h3>
+                <p class="text-muted">Search for a student's result by Roll Number or load all student results at once.</p>
+                
+                <!-- Search Form -->
+                <div class="input-group mb-4">
+                    <input type="text" id="search-roll" class="form-control form-control-lg" placeholder="Enter Roll No (e.g. BSCS-001)">
+                    <button id="search-btn" class="btn btn-dark px-4 fw-bold">Search</button>
+                </div>
+                
+                <!-- Load All Button -->
+                <button id="loadPortalBtn" class="btn btn-outline-primary mb-4 w-100 fw-bold">
+                    Load All Student Results
                 </button>
-                <div id="studentPortalOutput"></div>
+                
+                <!-- Output Container -->
+                <div id="studentPortalOutput" class="p-3 bg-light border rounded"></div>
             </div>
 
         </div>
