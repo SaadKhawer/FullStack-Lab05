@@ -1,33 +1,19 @@
-// lab05.js
-
 import formatStudentResult, { 
     DEPARTMENT_NAME, 
-    calculateTotal as calcTotal, // Importing with alias
+    calculateTotal as calcTotal, 
     calculateAverage, 
     getGrade, 
     getStatus 
 } from './studentUtils.js';
 
-// --- Helper for displaying output ---
-function displayOutput(sectionId, content) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        const div = document.createElement('div');
-        div.innerHTML = content;
-        section.appendChild(div);
-    }
+// Helper to safely append HTML to an element
+function appendHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML += html + "<br>";
 }
-
-function displayCard(sectionId, content) {
-    const html = `<div class="card">${content}</div>`;
-    displayOutput(sectionId, html);
-}
-
-function clearOutput(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.innerHTML = '';
-    }
+function setHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
 }
 
 // ==========================================
@@ -39,37 +25,17 @@ function task1() {
     const student = { name: "Ali", rollNumber: "BSCS-001", department: "Computer Science", semester: 6 };
     const cgpas = [3.1, 3.5, 3.8, 3.2, 3.9];
 
-    // 1. Merge coreCourses and electiveCourses into allCourses using the spread operator
+    // 1 & 2. Merge and copy
     const allCourses = [...coreCourses, ...electiveCourses];
-    
-    // 2. Create a copy of allCourses using spread and add one new course to the copy only
     const copyCourses = [...allCourses, "Software Engineering"];
 
-    // 3. Create an updated student object using spread
+    // 3. Update student
     const updatedStudent = { ...student, semester: 7, cgpa: 3.45 };
 
-    // 4. enrollStudent function using a rest parameter
-    function enrollStudent(name, ...courses) {
-        return `${name} enrolled in ${courses.length} course(s): ${courses.join(", ")}`;
-    }
-
-    // 5. calculateAverageCGPA using a rest parameter and an arrow function
-    const calculateAverageCGPA = (...cgpasArgs) => {
-        const sum = cgpasArgs.reduce((acc, val) => acc + val, 0);
-        return (sum / cgpasArgs.length).toFixed(2);
-    };
-
-    // 6. Find the highest CGPA using Math.max() with the spread operator
+    // 6. Math.max
     const highestCGPA = Math.max(...cgpas);
 
-    // 7. Function with a default parameter
-    function getStudentInfo(name, department = "Computer Science") {
-        return `Department (default): ${department}`;
-    }
-
-    // 8. Template literals for messages
-    // 9. Display the results in a Bootstrap-style card
-    const outputHtml = `
+    setHtml('spreadOutput', `
         <strong>Core Courses:</strong> ${coreCourses.join(", ")}<br>
         <strong>Elective Courses:</strong> ${electiveCourses.join(", ")}<br>
         <strong>All Courses (${allCourses.length}):</strong> ${allCourses.join(", ")}<br>
@@ -78,23 +44,35 @@ function task1() {
         <br>
         <strong>Original Student:</strong> ${student.name}, Semester ${student.semester}<br>
         <strong>Updated Student:</strong> ${updatedStudent.name}, Semester ${updatedStudent.semester}, CGPA ${updatedStudent.cgpa}<br>
-        <br>
-        ${enrollStudent(student.name, "Web Development", "Database Systems", "Artificial Intelligence")}<br>
-        <br>
-        <strong>Average CGPA:</strong> ${calculateAverageCGPA(...cgpas)}<br>
-        <strong>Highest CGPA:</strong> ${highestCGPA}<br>
-        <br>
-        ${getStudentInfo(student.name)}
-    `;
+        <strong>Highest CGPA:</strong> ${highestCGPA}
+    `);
 
-    displayCard('task1-output', outputHtml);
+    // 4 & 5. Rest parameters
+    function enrollStudent(name, ...courses) {
+        return `${name} enrolled in ${courses.length} course(s): ${courses.join(", ")}`;
+    }
+    const calculateAverageCGPA = (...cgpasArgs) => {
+        const sum = cgpasArgs.reduce((acc, val) => acc + val, 0);
+        return (sum / cgpasArgs.length).toFixed(2);
+    };
+
+    setHtml('restOutput', `
+        ${enrollStudent(student.name, "Web Development", "Database Systems", "Artificial Intelligence")}<br>
+        <strong>Average CGPA:</strong> ${calculateAverageCGPA(...cgpas)}
+    `);
+
+    // 7. Default parameters
+    function getStudentInfo(name, department = "Computer Science") {
+        return `Department (default): ${department}`;
+    }
+    setHtml('es6Output', getStudentInfo(student.name));
 }
 
 // ==========================================
 // Task 2 — Student Utility Module
 // ==========================================
 function task2() {
-    displayOutput('task2-output', `<h4>Department: ${DEPARTMENT_NAME}</h4>`);
+    let output = `<strong>Department: ${DEPARTMENT_NAME}</strong><br><br>`;
     
     const students = [
         { name: "Sara", rollNumber: "BSCS-023", assignment: 28, midterm: 20, finalExam: 34 },
@@ -103,105 +81,75 @@ function task2() {
         { name: "Hassan", rollNumber: "BSCS-031", assignment: 25, midterm: 22, finalExam: 38 }
     ];
 
-    students.forEach(studentObj => {
-        // Object destructuring
-        const { name, rollNumber, assignment, midterm, finalExam } = studentObj;
-        
+    students.forEach(s => {
+        const { name, rollNumber, assignment, midterm, finalExam } = s;
         const total = calcTotal(assignment, midterm, finalExam);
         const average = calculateAverage(assignment, midterm, finalExam).toFixed(2);
         const grade = getGrade(total);
         const status = getStatus(total);
         
-        // formatStudentResult(name, rollNumber, total) returns a formatted string (multiline)
-        // Convert \n to <br> for HTML display
         const formattedStr = formatStudentResult(name, rollNumber, total).replace(/\n/g, '<br>');
-        
-        const cardContent = `
-            ${formattedStr}<br>
-            Average: ${average}<br>
-            Grade: ${grade}<br>
-            Status: ${status}
+        output += `
+            <div class="card p-3 mb-2 bg-light">
+                ${formattedStr}<br>
+                Average: ${average}<br>
+                Grade: ${grade}<br>
+                Status: ${status}
+            </div>
         `;
-        displayCard('task2-output', cardContent);
     });
+    setHtml('moduleOutput', output);
 }
 
 // ==========================================
 // Task 3 — Online Examination Workflow
 // ==========================================
 function task3() {
-    // 1. Functions with setTimeout
     function verifyStudent(roll, callback) {
         setTimeout(() => {
-            if (!roll) {
-                // Error-first callback
-                callback("Roll number is required", null);
-            } else {
-                callback(null, `Student ${roll} verified`);
-            }
+            if (!roll) callback("Roll number is required", null);
+            else callback(null, `Student ${roll} verified`);
         }, 1000);
     }
+    function loadExamPaper(callback) { setTimeout(() => callback("Exam paper loaded"), 1500); }
+    function submitAnswers(callback) { setTimeout(() => callback("Answers submitted"), 2000); }
+    function generateResult(callback) { setTimeout(() => callback("Result generated: 82 marks"), 1000); }
 
-    function loadExamPaper(callback) {
-        setTimeout(() => {
-            callback("Exam paper loaded");
-        }, 1500);
-    }
-
-    function submitAnswers(callback) {
-        setTimeout(() => {
-            callback("Answers submitted");
-        }, 2000);
-    }
-
-    function generateResult(callback) {
-        setTimeout(() => {
-            callback("Result generated: 82 marks");
-        }, 1000);
-    }
-
-    function runWorkflow(roll) {
-        const outputId = 'task3-output';
-        
-        let workflowOutput = `<strong>Workflow for '${roll === "" ? "Empty Roll" : roll}':</strong><br>Exam workflow started...<br>`;
-        displayOutput(outputId, workflowOutput);
-
+    function runWorkflow(roll, targetId) {
+        setHtml(targetId, `<strong>Exam workflow started...</strong><br>`);
         let timeOffset = 0;
         
-        // This nested structure is called "callback hell" because it leads to deeply nested code 
-        // that forms a pyramid shape, making it hard to read, maintain, and debug.
-        
         verifyStudent(roll, (error, data) => {
-            timeOffset += 1; // 1s
+            timeOffset += 1;
             if (error) {
-                displayOutput(outputId, `<span class="error">Error: ${error}</span><br><br>`);
-                return; // Stop if error
+                appendHtml(targetId, `<span class="text-danger">Error: ${error}</span>`);
+                return;
             }
-            displayOutput(outputId, `Step 1: ${data} (after ${timeOffset} second)<br>`);
+            appendHtml(targetId, `Step 1: ${data} (after ${timeOffset} second)`);
             
             loadExamPaper((msg) => {
-                timeOffset += 1.5; // 1.5s
-                displayOutput(outputId, `Step 2: ${msg} (after ${timeOffset} seconds)<br>`);
+                timeOffset += 1.5;
+                appendHtml(targetId, `Step 2: ${msg} (after ${timeOffset} seconds)`);
                 
                 submitAnswers((msg) => {
-                    timeOffset += 2; // 2s
-                    displayOutput(outputId, `Step 3: ${msg} (after ${timeOffset} seconds)<br>`);
+                    timeOffset += 2;
+                    appendHtml(targetId, `Step 3: ${msg} (after ${timeOffset} seconds)`);
                     
                     generateResult((msg) => {
-                        timeOffset += 1; // 1s
-                        displayOutput(outputId, `Step 4: ${msg} (after ${timeOffset} seconds)<br>`);
-                        displayOutput(outputId, `<strong>Exam completed successfully!</strong><br><br>`);
+                        timeOffset += 1;
+                        appendHtml(targetId, `Step 4: ${msg} (after ${timeOffset} seconds)`);
+                        appendHtml(targetId, `<strong>Exam completed successfully!</strong>`);
                     });
                 });
             });
         });
     }
 
-    // Test with valid roll number, then test with empty roll number after a delay
-    runWorkflow("BSCS-001");
-    setTimeout(() => {
-        runWorkflow("");
-    }, 6500);
+    // Run valid roll number in nestedCallbackOutput
+    runWorkflow("BSCS-001", "nestedCallbackOutput");
+    
+    // Run empty roll number in callbackOutput to show error handling
+    runWorkflow("", "callbackOutput");
 }
 
 // ==========================================
@@ -238,131 +186,75 @@ function calculateResult(student) {
     });
 }
 
-// Part A: Promise Chain demonstration on load
+// Part A: Promise Chain
 function testPromiseChain() {
-    const out = 'task4-output';
-    displayOutput(out, "Searching for roll number BSCS-001 (Promise Chain)...<br>");
+    const out = 'promiseOutput';
+    setHtml(out, "Searching for roll number BSCS-001 (Promise Chain)...<br>");
     
     findStudent("BSCS-001")
-        .then(student => {
-            return calculateResult(student).then(result => ({ student, result }));
-        })
+        .then(student => calculateResult(student).then(result => ({ student, result })))
         .then(({ student, result }) => {
-            const cardHtml = `
-                <hr>
-                Student: ${student.name}<br>
-                Roll No: ${student.rollNumber}<br>
-                Department: ${student.department}<br>
-                Semester: ${student.semester}<br>
-                Total: ${result.total}<br>
-                Average: ${result.average}<br>
-                Grade: ${result.grade}<br>
-                Status: ${result.status}<br>
-                <hr>
-            `;
-            displayCard(out, cardHtml);
+            appendHtml(out, `----------------------------------------------<br>
+                Student: ${student.name}<br>Roll No: ${student.rollNumber}<br>
+                Total: ${result.total}<br>Average: ${result.average}<br>
+                Grade: ${result.grade}<br>Status: ${result.status}<br>
+                ----------------------------------------------`);
         })
-        .catch(err => {
-            displayOutput(out, `<span class="error">Error: ${err}</span><br>`);
-        })
-        .finally(() => {
-            displayOutput(out, "Search completed (Promise Chain)<br><br>");
-        });
+        .catch(err => appendHtml(out, `<span class="text-danger">Error: ${err}</span>`))
+        .finally(() => appendHtml(out, "Search completed"));
 }
 
-// Part B & C: Async/Await Search Form
-async function showResult(rollNumber) {
-    const out = 'task4-output';
-    clearOutput(out);
-    displayOutput(out, `Searching for roll number ${rollNumber}:<br>Searching...<br>`);
-
+// Part B: Async Await
+async function testAsyncAwait() {
+    const out = 'asyncOutput';
+    setHtml(out, "Searching for roll number BSCS-999 (Async/Await)...<br>Searching...<br>");
     try {
-        const student = await findStudent(rollNumber);
+        const student = await findStudent("BSCS-999");
         const result = await calculateResult(student);
-        const cardHtml = `
-            <hr>
-            Student: ${student.name}<br>
-            Roll No: ${student.rollNumber}<br>
-            Department: ${student.department}<br>
-            Semester: ${student.semester}<br>
-            Total: ${result.total}<br>
-            Average: ${result.average}<br>
-            Grade: ${result.grade}<br>
-            Status: ${result.status}<br>
-            <hr>
-        `;
-        displayOutput(out, cardHtml);
+        appendHtml(out, `Student: ${student.name}`);
     } catch (err) {
-        displayOutput(out, `<span class="error">Error: ${err}</span><br>`);
+        appendHtml(out, `<span class="text-danger">Error: ${err}</span>`);
     } finally {
-        displayOutput(out, "Search completed<br><br>");
+        appendHtml(out, "Search completed");
     }
 }
 
-// Setup Event Listeners
-const searchBtn = document.getElementById('search-btn');
-if (searchBtn) {
-    searchBtn.addEventListener('click', () => {
-        const roll = document.getElementById('search-roll').value.trim();
-        if (roll) {
-            showResult(roll);
-        }
-    });
-}
-
-// Part D: Load All Results
+// Part D: Load All Results (Triggered by Button)
 async function loadAllResults() {
-    const out = 'task4-output';
-    clearOutput(out);
-    displayOutput(out, "Loading all results...<br>");
+    const out = 'studentPortalOutput';
+    setHtml(out, "Loading all results...<br>");
 
     try {
         const promises = dbStudents.map(student => 
             calculateResult(student).then(res => ({ student, res }))
         );
-        
-        // Promise.all to calculate results concurrently
         const allResults = await Promise.all(promises);
         
-        let htmlOutput = '<hr>';
-        let passedCount = 0;
-        let failedCount = 0;
+        let htmlOutput = '----------------------------------------------<br>';
+        let passedCount = 0; let failedCount = 0;
 
         allResults.forEach(({student, res}) => {
-            if (res.status === "Pass") passedCount++;
-            else failedCount++;
-            
+            if (res.status === "Pass") passedCount++; else failedCount++;
             htmlOutput += `Student: ${student.name} Roll No: ${student.rollNumber} Grade: ${res.grade} Status: ${res.status}<br>`;
         });
-
-        htmlOutput += '<hr>';
+        htmlOutput += '----------------------------------------------<br>';
+        htmlOutput += `<strong>Final Statistics</strong><br>Total Students: ${allResults.length}<br>Passed: ${passedCount}<br>Failed: ${failedCount}`;
         
-        const stats = `
-            <strong>Final Statistics</strong><br>
-            Total Students: ${allResults.length}<br>
-            Passed Students: ${passedCount}<br>
-            Failed Students: ${failedCount}<br>
-        `;
-        htmlOutput += stats;
-        
-        // Clear "Loading all results..." and show data
-        clearOutput(out);
-        displayCard(out, htmlOutput);
-
+        setHtml(out, htmlOutput);
     } catch (err) {
-        displayOutput(out, `<span class="error">Error loading all results: ${err}</span><br>`);
+        setHtml(out, `<span class="text-danger">Error: ${err}</span>`);
     }
 }
 
-const loadAllBtn = document.getElementById('load-all-btn');
-if (loadAllBtn) {
-    loadAllBtn.addEventListener('click', () => {
-        loadAllResults();
-    });
+const loadPortalBtn = document.getElementById('loadPortalBtn');
+if (loadPortalBtn) {
+    // Remove the old script.js event listener if any by cloning (optional) but we just add ours
+    loadPortalBtn.addEventListener('click', loadAllResults);
 }
 
-// --- Initialize Tasks ---
+// Initialize
 task1();
 task2();
 task3();
 testPromiseChain();
+testAsyncAwait();
