@@ -8,12 +8,12 @@
    Run with Live Server (modules do not work on file://)
 ===================================================== */
 
-import formatResult, {
-    COURSE_CODE,
+import formatStudentResult, {
+    DEPARTMENT_NAME as COURSE_CODE,
     calculateTotal,
     calculateAverage,
     getGrade
-} from "./lab05-utils.js";
+} from "./studentUtils.js";
 
 /* =====================================================
    LAB 05
@@ -144,7 +144,7 @@ document.getElementById("moduleOutput").innerHTML =
     calculateAverage(18, 22, 42).toFixed(2) + "<br>" +
     "Grade: " + getGrade(lab05ModuleTotal) +
     "<br><br>" +
-    formatResult("Sara", 91);
+    formatStudentResult("Sara", "BSCS-123", 91);
 
 /* =====================================================
    LAB 05
