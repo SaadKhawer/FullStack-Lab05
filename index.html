@@ -8,8 +8,6 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
@@ -227,23 +225,23 @@
             </div>
 
             <!-- 9. Final Portal -->
-            <div class="profile-card bg-white shadow-sm p-4 rounded border">
-                <h3 class="text-primary mb-3">9. Student Result Portal</h3>
-                <p class="text-muted">Search for a student's result by Roll Number or load all student results at once.</p>
+            <div class="profile-card">
+                <h3>9. Student Result Portal</h3>
+                <p>Search for a student's result by Roll Number or load all student results at once.</p>
                 
                 <!-- Search Form -->
-                <div class="input-group mb-4">
-                    <input type="text" id="search-roll" class="form-control form-control-lg" placeholder="Enter Roll No (e.g. BSCS-001)">
-                    <button id="search-btn" class="btn btn-dark px-4 fw-bold">Search</button>
+                <div class="input-group mb-3">
+                    <input type="text" id="search-roll" class="form-control" placeholder="Enter Roll No (e.g. BSCS-001)">
+                    <button id="search-btn" class="btn btn-primary">Search</button>
                 </div>
                 
                 <!-- Load All Button -->
-                <button id="loadPortalBtn" class="btn btn-outline-primary mb-4 w-100 fw-bold">
+                <button id="loadPortalBtn" class="btn btn-secondary mb-3 w-100">
                     Load All Student Results
                 </button>
                 
                 <!-- Output Container -->
-                <div id="studentPortalOutput" class="p-3 bg-light border rounded"></div>
+                <div id="studentPortalOutput"></div>
             </div>
 
         </div>
