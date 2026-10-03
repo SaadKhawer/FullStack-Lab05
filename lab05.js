@@ -300,12 +300,15 @@ async function showResult(rollNumber) {
 }
 
 // Setup Event Listeners
-document.getElementById('search-btn').addEventListener('click', () => {
-    const roll = document.getElementById('search-roll').value.trim();
-    if (roll) {
-        showResult(roll);
-    }
-});
+const searchBtn = document.getElementById('search-btn');
+if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+        const roll = document.getElementById('search-roll').value.trim();
+        if (roll) {
+            showResult(roll);
+        }
+    });
+}
 
 // Part D: Load All Results
 async function loadAllResults() {
@@ -351,9 +354,12 @@ async function loadAllResults() {
     }
 }
 
-document.getElementById('load-all-btn').addEventListener('click', () => {
-    loadAllResults();
-});
+const loadAllBtn = document.getElementById('load-all-btn');
+if (loadAllBtn) {
+    loadAllBtn.addEventListener('click', () => {
+        loadAllResults();
+    });
+}
 
 // --- Initialize Tasks ---
 task1();
